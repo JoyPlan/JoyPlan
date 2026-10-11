@@ -14,7 +14,7 @@ The AI analyzes these inputs, then ranks suitable activities, restaurants, snack
 |------|------------|
 | Shatha | 1098561 |
 | Mashghona | 1091650 |
-| Ameena | 1093604 |
+| Amena | 1093604 |
 
 ## Methodology
 Agile Scrum (three 2-week sprints)
