@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('My plans')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">My plans</h1>
+        <a class="btn jp-btn-primary" th:href="@{/plans/new}">Plan a day</a>
+    </div>
+    <p th:if="${plans.isEmpty()}" class="text-muted">You have not created any plans yet.</p>
+    <div class="table-responsive" th:unless="${plans.isEmpty()}">
+        <table class="table align-middle jp-table">
+            <thead>
+            <tr><th>Plan</th><th>Date</th><th>Time</th><th>Stops</th><th>Cost / budget</th><th>Status</th><th>Rating</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${plans}">
+                <td><a th:href="@{/plans/{id}(id=${p.id})}" th:text="${p.title}">Plan</a></td>
+                <td th:text="${#temporals.format(p.request.outingDate, 'd MMM yyyy')}">Date</td>
+                <td th:text="${#temporals.format(p.request.startTime, 'HH:mm')} + '–' + ${#temporals.format(p.request.endTime, 'HH:mm')}">Time</td>
+                <td th:text="${p.items.size()}">4</td>
+                <td th:text="'AED ' + ${p.totalCost} + ' / ' + ${p.request.budget}">AED</td>
+                <td><span class="badge jp-status" th:text="${p.status.label}">Draft</span></td>
+                <td><span class="jp-stars" th:text="${p.rating == null} ? '–' : ${#strings.repeat('★', p.rating)}">–</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="h5 mt-4">Shared with me</h2>
+    <p th:if="${sharedPlans.isEmpty()}" class="text-muted">No plans have been shared with you.</p>
+    <ul class="list-group" th:unless="${sharedPlans.isEmpty()}">
+        <li class="list-group-item d-flex justify-content-between" th:each="p : ${sharedPlans}">
+            <a th:href="@{/plans/{id}(id=${p.id})}" th:text="${p.title}">Plan</a>
+            <span class="small text-muted" th:text="'from ' + ${p.owner.displayName}">from</span>
+        </li>
+    </ul>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

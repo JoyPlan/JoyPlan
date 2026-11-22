@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Replace a stop')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4 jp-medium">
+    <a th:href="@{/plans/{id}(id=${plan.id})}" class="small">&larr; Back to plan</a>
+    <h1 class="h4 mt-2">Replace "<span th:text="${alternatives.target().venue.name}">Venue</span>"</h1>
+    <p class="text-muted">Other options for the same time slot that suit your children and keep the plan within budget and time. Everything else in your plan stays the same.</p>
+    <div th:if="${alternatives.distanceExtended() and !alternatives.options().isEmpty()}" class="alert alert-info">
+        Few options were close by, so the search distance was widened by 50%.
+    </div>
+    <div th:if="${alternatives.options().isEmpty()}" class="alert alert-warning">
+        No other option fits this slot. You can regenerate the whole plan instead.
+        <form th:action="@{/plans/{id}/regenerate(id=${plan.id})}" method="post" class="mt-2">
+            <button type="submit" class="btn btn-sm btn-outline-primary">Regenerate whole plan</button>
+        </form>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6" th:each="o : ${alternatives.options()}">
+            <div class="card jp-card p-3 h-100">
+                <div class="d-flex justify-content-between">
+                    <h2 class="h6 mb-1" th:text="${o.venue().name}">Venue</h2>
+                    <span class="badge bg-warning text-dark" th:if="${o.venue().sponsored}">Sponsored</span>
+                </div>
+                <div class="small mb-2">
+                    <span class="badge jp-chip" th:text="${o.venue().setting.label}">Indoor</span>
+                    <span class="badge jp-chip" th:text="'Ages ' + ${o.venue().ageRange}">Ages</span>
+                    <span class="badge jp-chip" th:text="${o.distanceLabel}">km</span>
+                    <span class="badge jp-chip" th:text="'Match ' + ${o.scorePercent} + '%'">Match</span>
+                </div>
+                <p class="small" th:text="${o.reason()}">Reason</p>
+                <div class="d-flex justify-content-between align-items-center mt-auto">
+                    <strong th:text="${o.cost() == 0} ? 'Free' : 'AED ' + ${o.cost()}">AED</strong>
+                    <form th:action="@{/plans/{id}/items/{itemId}/replace(id=${plan.id},itemId=${alternatives.target().id})}" method="post">
+                        <input type="hidden" name="venueId" th:value="${o.venue().id}">
+                        <button type="submit" class="btn btn-sm jp-btn-primary">Use this</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

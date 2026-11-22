@@ -1,0 +1,16 @@
+{
+  "name": "JoyPlan – Smart Family Day Planner",
+  "short_name": "JoyPlan",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#faf9ff",
+  "theme_color": "#5b3cc4",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

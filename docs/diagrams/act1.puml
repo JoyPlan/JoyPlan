@@ -1,0 +1,59 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ActivityBorderColor #45289f
+skinparam ActivityBackgroundColor #f4f1ff
+skinparam ActivityDiamondBackgroundColor #fff1e6
+skinparam ActivityDiamondBorderColor #d9480f
+skinparam SwimlaneBorderColor #45289f
+skinparam SwimlaneTitleFontStyle bold
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+title Activity Diagram 1 – Generate AI Day Plan (UC-04)
+|Parent|
+start
+:Open "Plan a day";
+:Enter mood, energy, budget, area,\nmax distance, time window,\nindoor/outdoor, adults, meal;
+:Submit outing form;
+|JoyPlan System|
+if (Form valid and window >= 60 min?) then (no)
+  |Parent|
+  :See validation messages;
+  stop
+else (yes)
+  |JoyPlan System|
+endif
+if (Family profile has children?) then (no)
+  :Redirect to Family profile\n(precondition FR-01);
+  stop
+else (yes)
+endif
+:Load children's ages, interests\nand food preferences;
+:Filter and score venues per category\n(age, distance, budget, setting,\nopening hours, energy) (FR-03);
+if (Gemini API key configured?) then (yes)
+  :Send top candidates and limits\nto AI Plan Generation Service;
+  |AI Plan Service|
+  :Choose and order stops,\nwrite one-line reasons;
+  |JoyPlan System|
+  :Keep only listed venues,\nre-time stops with travel time;
+  if (AI plan valid?\n(budget, time, hours)) then (yes)
+  else (no)
+    :Fall back to rule-based planner;
+  endif
+else (no)
+  :Build timed plan with\nrule-based planner (FR-04);
+endif
+:Validate total cost and time window\n(NFR-07); drop stops that do not fit;
+:Save plan as Draft;
+|Parent|
+:Review plan: times, costs,\nrunning total, reasons (FR-05, FR-13);
+if (Plan acceptable?) then (yes)
+  :Save plan (FR-09);
+else (no)
+  :Replace a stop or regenerate\n(UC-06 / FR-07);
+endif
+stop
+@enduml

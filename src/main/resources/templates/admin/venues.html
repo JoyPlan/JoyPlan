@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Venues')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h1 class="h3 mb-0">Curated venues</h1>
+        <div class="d-flex gap-2">
+            <form th:action="@{/admin/venues}" method="get" class="d-flex gap-2">
+                <label for="category" class="visually-hidden">Category</label>
+                <select id="category" name="category" class="form-select form-select-sm">
+                    <option value="">All categories</option>
+                    <option th:each="c : ${categories}" th:value="${c}" th:text="${c.label}" th:selected="${c == selectedCategory}">Cat</option>
+                </select>
+                <button class="btn btn-sm btn-outline-secondary" type="submit">Filter</button>
+            </form>
+            <a class="btn btn-sm jp-btn-primary" th:href="@{/admin/venues/new}">Add venue</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm align-middle jp-table">
+            <thead>
+            <tr><th>Name</th><th>Category</th><th>Area</th><th>Ages</th><th>Price A/C (AED)</th><th>Hours</th><th>Verified</th><th>Status</th><th class="text-end">Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="v : ${venues}" th:classappend="${!v.active} ? 'table-secondary'">
+                <td>
+                    <span th:text="${v.name}">Name</span>
+                    <span class="badge bg-warning text-dark" th:if="${v.sponsored}">Sponsored</span>
+                </td>
+                <td th:text="${v.category.label}">Activity</td>
+                <td th:text="${v.area.label}">Area</td>
+                <td th:text="${v.ageRange}">Ages</td>
+                <td th:text="${v.priceAdult} + ' / ' + ${v.priceChild}">0</td>
+                <td th:text="${#temporals.format(v.openTime, 'HH:mm')} + '–' + ${#temporals.format(v.closeTime, 'HH:mm')}">Hours</td>
+                <td>
+                    <span th:text="${v.lastVerified}">date</span>
+                    <span class="badge bg-danger" th:if="${v.stale}">Stale</span>
+                </td>
+                <td th:text="${v.active} ? 'Active' : 'Hidden'">Active</td>
+                <td class="text-end text-nowrap">
+                    <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/venues/{id}/edit(id=${v.id})}">Edit</a>
+                    <form th:action="@{/admin/venues/{id}/verify(id=${v.id})}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-success" type="submit">Verify</button>
+                    </form>
+                    <form th:action="@{/admin/venues/{id}/toggle(id=${v.id})}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-secondary" type="submit" th:text="${v.active} ? 'Hide' : 'Show'">Hide</button>
+                    </form>
+                    <form th:action="@{/admin/venues/{id}/delete(id=${v.id})}" method="post" class="d-inline" data-confirm="Delete this venue?">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

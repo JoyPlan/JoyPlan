@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 mb-1">Hello, <span th:text="${user.displayName}">Parent</span></h1>
+            <p class="text-muted mb-0">Home area: <span th:text="${user.homeArea.label}">Area</span></p>
+        </div>
+        <a class="btn btn-lg jp-btn-primary" th:href="@{/plans/new}">Plan a day out</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card jp-stat p-3">
+                <div class="jp-stat-label">Children in profile</div>
+                <div class="jp-stat-value" th:text="${children.size()}">0</div>
+                <a th:href="@{/family}" class="small">Manage family profile</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card jp-stat p-3">
+                <div class="jp-stat-label">Plans created</div>
+                <div class="jp-stat-value" th:text="${planCount}">0</div>
+                <a th:href="@{/plans}" class="small">View all plans</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card jp-stat p-3">
+                <div class="jp-stat-label">Shared with me</div>
+                <div class="jp-stat-value" th:text="${sharedPlans.size()}">0</div>
+                <span class="small text-muted">Plans from family members</span>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${children.isEmpty()}" class="alert alert-info">
+        Start by adding your children to the <a th:href="@{/family}">family profile</a>. JoyPlan needs their ages to suggest suitable places.
+    </div>
+
+    <h2 class="h5 mb-3">Recent plans</h2>
+    <p th:if="${recentPlans.isEmpty()}" class="text-muted">No plans yet. Your first plan takes less than two minutes.</p>
+    <div class="row g-3">
+        <div class="col-md-6" th:each="p : ${recentPlans}">
+            <a class="card jp-card jp-plan-card p-3 text-decoration-none" th:href="@{/plans/{id}(id=${p.id})}">
+                <div class="d-flex justify-content-between">
+                    <strong th:text="${p.title}">Title</strong>
+                    <span class="badge jp-status" th:text="${p.status.label}">Draft</span>
+                </div>
+                <div class="small text-muted mt-1">
+                    <span th:text="${#temporals.format(p.request.startTime, 'HH:mm')} + '–' + ${#temporals.format(p.request.endTime, 'HH:mm')}">10:00–14:00</span>
+                    · <span th:text="${p.items.size()} + ' stops'">4 stops</span>
+                    · AED <span th:text="${p.totalCost}">0</span> / <span th:text="${p.request.budget}">0</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

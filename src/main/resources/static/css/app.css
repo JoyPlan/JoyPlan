@@ -1,0 +1,262 @@
+:root {
+    --jp-primary: #5b3cc4;
+    --jp-primary-dark: #45289f;
+    --jp-accent: #ff8a3d;
+    --jp-soft: #f4f1ff;
+    --jp-text: #1f1b2e;
+    --jp-radius: 14px;
+}
+
+body {
+    background: #faf9ff;
+    color: var(--jp-text);
+    font-size: 1rem;
+}
+
+.jp-navbar {
+    background: linear-gradient(90deg, var(--jp-primary), #7b5be0);
+}
+
+.jp-navbar .nav-link,
+.jp-brand {
+    color: #fff !important;
+}
+
+.jp-navbar .nav-link:hover,
+.jp-navbar .nav-link:focus {
+    text-decoration: underline;
+}
+
+.jp-brand {
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.jp-title {
+    color: var(--jp-primary-dark);
+}
+
+.jp-card {
+    border: 1px solid #e6e1fb;
+    border-radius: var(--jp-radius);
+    box-shadow: 0 2px 10px rgba(91, 60, 196, .06);
+    background: #fff;
+}
+
+.jp-plan-card {
+    color: inherit;
+    transition: transform .15s ease;
+}
+
+.jp-plan-card:hover {
+    transform: translateY(-2px);
+}
+
+.jp-plan-header {
+    background: linear-gradient(135deg, #fff, var(--jp-soft));
+}
+
+.jp-btn-primary {
+    background: var(--jp-primary);
+    border-color: var(--jp-primary);
+    color: #fff;
+}
+
+.jp-btn-primary:hover,
+.jp-btn-primary:focus {
+    background: var(--jp-primary-dark);
+    border-color: var(--jp-primary-dark);
+    color: #fff;
+}
+
+.jp-btn-tired {
+    background: var(--jp-accent);
+    border-color: var(--jp-accent);
+    color: #1f1b2e;
+    font-weight: 600;
+}
+
+.jp-btn-tired:hover {
+    background: #f0731f;
+    color: #1f1b2e;
+}
+
+.jp-stat {
+    border-radius: var(--jp-radius);
+    border: 1px solid #e6e1fb;
+}
+
+.jp-stat-label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #6b6584;
+}
+
+.jp-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--jp-primary-dark);
+}
+
+.jp-status {
+    background: var(--jp-soft);
+    color: var(--jp-primary-dark);
+    border: 1px solid #d8cff9;
+}
+
+.jp-chip {
+    background: #eef0f4;
+    color: #33384a;
+    font-weight: 500;
+    margin-right: .2rem;
+}
+
+.jp-chip-food {
+    background: #fff1e6;
+    color: #8a4307;
+}
+
+.jp-cat {
+    color: #fff;
+}
+
+.jp-cat-activity {
+    background: var(--jp-primary);
+}
+
+.jp-cat-restaurant {
+    background: #d9480f;
+}
+
+.jp-cat-snack {
+    background: #e67700;
+}
+
+.jp-cat-break {
+    background: #2b8a3e;
+}
+
+.jp-progress {
+    background: var(--jp-primary);
+}
+
+.jp-timeline-item {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.jp-time {
+    width: 3.6rem;
+    flex-shrink: 0;
+    font-weight: 700;
+    color: var(--jp-primary-dark);
+    padding-top: .9rem;
+}
+
+.jp-visited .card {
+    opacity: .7;
+    border-color: #b2f2bb;
+}
+
+.jp-reason {
+    background: var(--jp-soft);
+    border-radius: 8px;
+    padding: .5rem .75rem;
+}
+
+.jp-stars {
+    color: #f59f00;
+    letter-spacing: .1em;
+}
+
+.jp-pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+
+.jp-check-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .2rem .8rem;
+}
+
+.jp-narrow {
+    max-width: 480px;
+}
+
+.jp-medium {
+    max-width: 960px;
+}
+
+.jp-steps li {
+    margin-bottom: .4rem;
+}
+
+.jp-table thead th {
+    font-size: .8rem;
+    text-transform: uppercase;
+    color: #6b6584;
+}
+
+.jp-large-text {
+    font-size: 1.2rem;
+}
+
+.jp-large-text .small,
+.jp-large-text small {
+    font-size: 1rem;
+}
+
+.jp-high-contrast {
+    background: #000;
+    color: #fff;
+}
+
+.jp-high-contrast .card,
+.jp-high-contrast .jp-card,
+.jp-high-contrast .jp-stat,
+.jp-high-contrast .list-group-item,
+.jp-high-contrast .table {
+    background: #000 !important;
+    color: #fff !important;
+    border-color: #fff !important;
+}
+
+.jp-high-contrast .text-muted,
+.jp-high-contrast .jp-stat-label {
+    color: #ffeb3b !important;
+}
+
+.jp-high-contrast a {
+    color: #7cc4ff;
+}
+
+.jp-high-contrast .jp-reason,
+.jp-high-contrast .jp-chip,
+.jp-high-contrast .jp-status {
+    background: #222 !important;
+    color: #fff !important;
+}
+
+:focus-visible {
+    outline: 3px solid var(--jp-accent);
+    outline-offset: 2px;
+}
+
+@media print {
+    .jp-navbar,
+    .jp-footer,
+    form,
+    .btn {
+        display: none !important;
+    }
+
+    .col-lg-8 {
+        width: 100% !important;
+    }
+}

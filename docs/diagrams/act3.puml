@@ -1,0 +1,37 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ActivityBorderColor #45289f
+skinparam ActivityBackgroundColor #f4f1ff
+skinparam ActivityDiamondBackgroundColor #fff1e6
+skinparam ActivityDiamondBorderColor #d9480f
+skinparam SwimlaneBorderColor #45289f
+skinparam SwimlaneTitleFontStyle bold
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+title Activity Diagram 3 – Apply "Kids Are Tired" Adjustment (UC-05)
+|Parent|
+start
+:Mark finished stops as visited;
+:Tap "Kids are tired";
+:Confirm the change;
+|JoyPlan System|
+:Split plan into visited\nand remaining stops;
+if (Any remaining stops?) then (no)
+  :Tell parent the day is over (A1);
+  stop
+else (yes)
+endif
+:Set new start = end of last visited stop;\nnew end = min(original end, start + 90 min);
+:Set remaining budget = budget - spent;\nstart point = last visited venue;
+:Switch to tired mode: energy LOW,\nmax distance 8 km, no high-energy activities;
+:Build calm plan: break or snack first,\nthen at most one low-energy activity;
+:Keep visited stops unchanged,\nappend calm stops;
+:Recalculate total and mark plan\n"Adjusted: kids are tired";
+|Parent|
+:See shorter, calmer plan in < 5 s (NFR-01);
+stop
+@enduml

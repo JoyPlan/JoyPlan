@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Plan a day')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1 class="h3 mb-1">Plan a day out</h1>
+    <p class="text-muted">Planning for
+        <span th:each="c, st : ${children}" th:text="${c.age} + ' yrs' + (${st.last} ? '' : ', ')">4 yrs</span>.
+        <a th:href="@{/family}">Change</a></p>
+    <form th:action="@{/plans}" th:object="${form}" method="post" class="card jp-card p-4" novalidate>
+        <div th:if="${#fields.hasErrors('validWindow')}" class="alert alert-danger" th:errors="*{validWindow}"></div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">How are the kids feeling?</label>
+                <div class="jp-pill-group" role="radiogroup" aria-label="Mood">
+                    <span th:each="m : ${moods}">
+                        <input type="radio" class="btn-check" th:field="*{mood}" th:value="${m}">
+                        <label class="btn btn-outline-primary btn-sm" th:for="${#ids.prev('mood')}" th:text="${m.label}">Mood</label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Energy level</label>
+                <div class="jp-pill-group" role="radiogroup" aria-label="Energy level">
+                    <span th:each="e : ${energyLevels}">
+                        <input type="radio" class="btn-check" th:field="*{energy}" th:value="${e}">
+                        <label class="btn btn-outline-primary btn-sm" th:for="${#ids.prev('energy')}" th:text="${e.label}">Energy</label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="budget" class="form-label fw-semibold">Budget (AED, whole family)</label>
+                <input type="number" min="0" max="10000" step="10" th:field="*{budget}" class="form-control" th:classappend="${#fields.hasErrors('budget')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{budget}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="area" class="form-label fw-semibold">Start from</label>
+                <select th:field="*{area}" class="form-select">
+                    <option th:each="a : ${areas}" th:value="${a}" th:text="${a.label}">Area</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="maxDistanceKm" class="form-label fw-semibold">Max distance (km)</label>
+                <input type="number" min="1" max="60" th:field="*{maxDistanceKm}" class="form-control" th:classappend="${#fields.hasErrors('maxDistanceKm')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{maxDistanceKm}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="outingDate" class="form-label fw-semibold">Date</label>
+                <input type="date" th:field="*{outingDate}" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="startTime" class="form-label fw-semibold">From</label>
+                <input type="time" th:field="*{startTime}" class="form-control" th:classappend="${#fields.hasErrors('startTime')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{startTime}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="endTime" class="form-label fw-semibold">Until</label>
+                <input type="time" th:field="*{endTime}" class="form-control" th:classappend="${#fields.hasErrors('endTime')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{endTime}"></div>
+            </div>
+            <div class="col-md-4">
+                <label for="setting" class="form-label fw-semibold">Indoor / outdoor</label>
+                <select th:field="*{setting}" class="form-select">
+                    <option th:each="s : ${settingPreferences}" th:value="${s}" th:text="${s.label}">Any</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="adults" class="form-label fw-semibold">Adults</label>
+                <input type="number" min="1" max="6" th:field="*{adults}" class="form-control" th:classappend="${#fields.hasErrors('adults')} ? 'is-invalid'">
+                <div class="invalid-feedback" th:errors="*{adults}"></div>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" th:field="*{includeMeal}">
+                    <label class="form-check-label" th:for="${#ids.prev('includeMeal')}">Include a meal</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-lg jp-btn-primary mt-4">Generate my JoyPlan</button>
+    </form>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+autonumber
+title Sequence Diagram 1 – Generate AI Day Plan (UC-04)
+actor Parent
+participant ":PlanController" as C <<boundary>>
+participant ":PlanService" as PS <<control>>
+participant ":RecommendationService" as RS <<control>>
+participant ":AiPlanService" as AI <<boundary>>
+participant ":RulePlanner" as RP <<control>>
+participant ":PlanValidator" as V <<control>>
+database "Database" as DB
+Parent -> C : POST /plans (OutingForm)
+C -> C : validate form
+C -> PS : generate(user, request)
+PS -> DB : findChildren(user)
+DB --> PS : children
+loop for each category (Activity, Meal, Snack, Break)
+  PS -> RS : rank(ctx, category)
+  RS -> DB : findActiveVenues(category)
+  RS --> PS : ranked ScoredVenues with reasons
+end
+alt Gemini key configured
+  PS -> AI : compose(ctx, top candidates)
+  AI --> PS : AiDraft(summary, ordered stops)
+  PS -> RP : sequence(ctx, venues, reasons)
+  RP --> PS : timed PlanItems
+  PS -> V : isValid(items, request)
+  V --> PS : true / false
+end
+opt no AI plan or AI plan invalid
+  PS -> RP : build(ctx)
+  RP --> PS : timed PlanItems
+end
+PS -> V : validate(items, request)
+V --> PS : no issues
+PS -> DB : save(plan)
+PS --> C : Plan
+C --> Parent : redirect to /plans/{id} (plan view)
+@enduml

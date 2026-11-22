@@ -1,0 +1,49 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+autonumber
+title Sequence Diagram 3 – Apply "Kids Are Tired" (UC-05)
+actor Parent
+participant ":PlanController" as C <<boundary>>
+participant ":PlanService" as PS <<control>>
+participant ":RulePlanner" as RP <<control>>
+participant ":RecommendationService" as RS <<control>>
+database "Database" as DB
+Parent -> C : POST /plans/{id}/tired
+C -> PS : kidsAreTired(planId, user)
+PS -> DB : findById(planId)
+DB --> PS : plan with items
+PS -> PS : split visited / remaining items
+alt no remaining items
+  PS --> C : "the day is over"
+else remaining items exist
+  PS -> PS : new window = last visited end .. +90 min\nbudget left, start = last venue,\nenergy LOW, distance <= 8 km
+  PS -> RP : build(tiredCtx)
+  loop for Break, Snack, Activity
+    RP -> RS : rank(tiredCtx, category)
+    RS --> RP : calm, close options (no HIGH energy)
+  end
+  RP --> PS : calm timed items
+  PS -> PS : visited items + calm items
+  PS -> DB : save plan (tiredAdjusted = true)
+  PS --> C : confirmation message
+end
+C --> Parent : shorter, calmer plan
+@enduml

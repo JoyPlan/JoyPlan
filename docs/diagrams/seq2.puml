@@ -1,0 +1,56 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+autonumber
+title Sequence Diagram 2 – Replace a Plan Item (UC-06)
+actor Parent
+participant ":PlanController" as C <<boundary>>
+participant ":PlanService" as PS <<control>>
+participant ":RecommendationService" as RS <<control>>
+participant ":RulePlanner" as RP <<control>>
+participant ":PlanValidator" as V <<control>>
+database "Database" as DB
+Parent -> C : GET /plans/{id}/items/{itemId}/alternatives
+C -> PS : alternatives(planId, itemId, user)
+PS -> DB : findById(planId)
+PS -> RS : rank(ctx, sameCategory)
+RS --> PS : candidates
+loop each candidate not already in plan
+  PS -> RP : sequence(ctx, venuesWithCandidate, strict)
+  RP --> PS : trial items or null
+  PS -> V : isValid(trial, request)
+  V --> PS : result
+end
+opt fewer than 2 valid options
+  PS -> RS : rank(ctx, sameCategory, maxDistance x 1.5)
+  RS --> PS : wider candidates
+end
+PS --> C : Alternatives (up to 3 options)
+C --> Parent : options page
+Parent -> C : POST /replace (venueId)
+C -> PS : replace(planId, itemId, venueId, user)
+PS -> RP : sequence(ctx, venuesWithChoice, strict)
+RP --> PS : new timed items
+PS -> V : isValid(items, request)
+V --> PS : true
+PS -> DB : update plan items and total
+PS --> C : Plan
+C --> Parent : updated plan (other stops unchanged)
+@enduml

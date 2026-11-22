@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#5b3cc4">
+    <title th:text="${title} + ' · JoyPlan'">JoyPlan</title>
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/icons/icon.svg}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg jp-navbar" aria-label="Main navigation">
+    <div class="container">
+        <a class="navbar-brand jp-brand" th:href="@{/dashboard}">
+            <img th:src="@{/icons/icon.svg}" alt="" width="30" height="30"> JoyPlan
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto" sec:authorize="isAuthenticated()">
+                <li class="nav-item"><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/family}">Family profile</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/plans/new}">Plan a day</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/plans}">My plans</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a class="nav-link" th:href="@{/admin}">Admin</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <button type="button" class="btn btn-sm btn-outline-light" data-toggle-pref="jp-large-text"
+                        aria-pressed="false" title="Larger text">A+</button>
+                <button type="button" class="btn btn-sm btn-outline-light" data-toggle-pref="jp-high-contrast"
+                        aria-pressed="false" title="High contrast">Contrast</button>
+                <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-sm btn-light">Sign out</button>
+                </form>
+                <a sec:authorize="!isAuthenticated()" class="btn btn-sm btn-light" th:href="@{/login}">Sign in</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="flash">
+    <div id="offline-banner" class="alert alert-warning d-none" role="status">
+        You are offline. Showing the last saved copy of this page.
+    </div>
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="status">
+        <span th:text="${success}">Done</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
+<footer th:fragment="footer" class="jp-footer">
+    <div class="container small text-muted py-4">
+        JoyPlan · SWE 401 Software Engineering Project · Abu Dhabi University · Fall 2026
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/app.js}"></script>
+</footer>
+
+</body>
+</html>

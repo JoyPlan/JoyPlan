@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Admin')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Admin dashboard</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" th:href="@{/admin/venues}">Manage venues</a>
+            <a class="btn jp-btn-primary" th:href="@{/admin/venues/new}">Add venue</a>
+        </div>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="card jp-stat p-3"><div class="jp-stat-label">Registered users</div><div class="jp-stat-value" th:text="${stats.users()}">0</div></div></div>
+        <div class="col-6 col-md-3"><div class="card jp-stat p-3"><div class="jp-stat-label">Active venues</div><div class="jp-stat-value" th:text="${stats.activeVenues()} + ' / ' + ${stats.venues()}">0</div></div></div>
+        <div class="col-6 col-md-3"><div class="card jp-stat p-3"><div class="jp-stat-label">Plans generated</div><div class="jp-stat-value" th:text="${stats.plans()}">0</div></div></div>
+        <div class="col-6 col-md-3"><div class="card jp-stat p-3"><div class="jp-stat-label">Average rating</div><div class="jp-stat-value" th:text="${stats.averageRatingLabel}">–</div></div></div>
+    </div>
+    <div th:if="${stats.staleVenues() > 0}" class="alert alert-warning">
+        <strong th:text="${stats.staleVenues()}">0</strong> venue(s) have not been verified in the last 7 days (NFR-03).
+        <a th:href="@{/admin/venues}" class="alert-link">Review venues</a>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card jp-card p-3 h-100">
+                <h2 class="h6">Venues by category</h2>
+                <div th:each="entry : ${stats.venuesByCategory()}" class="mb-2">
+                    <div class="d-flex justify-content-between small">
+                        <span th:text="${entry.key.label}">Activity</span><span th:text="${entry.value}">0</span>
+                    </div>
+                    <div class="progress" role="progressbar" th:aria-label="${entry.key.label}">
+                        <div class="progress-bar jp-progress" th:style="'width:' + ${entry.value * 100 / stats.maxCategoryCount} + '%'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card jp-card p-3 h-100">
+                <h2 class="h6">Most recommended venues</h2>
+                <p th:if="${stats.topVenues().isEmpty()}" class="small text-muted mb-0">No plans generated yet.</p>
+                <table class="table table-sm mb-0" th:unless="${stats.topVenues().isEmpty()}">
+                    <thead><tr><th>Venue</th><th class="text-end">Times in plans</th></tr></thead>
+                    <tbody>
+                    <tr th:each="row : ${stats.topVenues()}">
+                        <td th:text="${row[0]}">Venue</td><td class="text-end" th:text="${row[1]}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="small text-muted mt-2">Saved plans: <span th:text="${stats.savedPlans()}">0</span> · Completed and rated: <span th:text="${stats.completedPlans()}">0</span></div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

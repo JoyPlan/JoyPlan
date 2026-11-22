@@ -1,0 +1,46 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ActivityBorderColor #45289f
+skinparam ActivityBackgroundColor #f4f1ff
+skinparam ActivityDiamondBackgroundColor #fff1e6
+skinparam ActivityDiamondBorderColor #d9480f
+skinparam SwimlaneBorderColor #45289f
+skinparam SwimlaneTitleFontStyle bold
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+title Activity Diagram 2 – Replace a Plan Item (UC-06)
+|Parent|
+start
+:Open generated plan;
+:Click "Replace" on one stop;
+|JoyPlan System|
+:Rank venues of the same category\nwithin max distance (FR-03);
+repeat
+  :Take next candidate not already in plan;
+  :Build trial plan with candidate\nin the same position;
+  :Re-time all stops and validate\nbudget, window, opening hours;
+  if (Trial plan valid?) then (yes)
+    :Add candidate to options;
+  endif
+repeat while (More candidates?) is (yes)
+->no;
+if (At least 2 options?) then (no)
+  :Widen distance by 50% and repeat search\n(alternative flow A1);
+else (yes)
+endif
+:Show up to 3 options with reason,\ncost, distance and match score;
+|Parent|
+if (Choose an option?) then (yes)
+  :Click "Use this";
+  |JoyPlan System|
+  :Replace only the selected slot;\nkeep all other stops (SPEC-02);
+  :Recalculate running total\nand redraw plan in < 5 s (NFR-01);
+else (cancel)
+  :Return to plan unchanged (A2);
+endif
+stop
+@enduml

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Family profile')}"></head>
+<body>
+<nav th:replace="~{fragments :: navbar}"></nav>
+<main class="container py-4">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1 class="h3 mb-4">Family profile</h1>
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card jp-card p-3 mb-4">
+                <h2 class="h5">Children</h2>
+                <p class="small text-muted">For privacy, JoyPlan stores only age, interests and food preferences – no names or photos.</p>
+                <p th:if="${children.isEmpty()}" class="text-muted mb-0">No children added yet.</p>
+                <div class="list-group" th:unless="${children.isEmpty()}">
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-3" th:each="c, st : ${children}">
+                        <div>
+                            <strong th:text="'Child ' + ${st.count} + ' · ' + ${c.age} + ' years'">Child 1 · 4 years</strong>
+                            <div class="small mt-1">
+                                <span class="badge jp-chip" th:each="i : ${c.interests}" th:text="${i.label}">Interest</span>
+                                <span class="badge jp-chip jp-chip-food" th:each="f : ${c.foodTags}" th:text="${f.label}">Food</span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-sm btn-outline-secondary" th:href="@{/family/children/{id}/edit(id=${c.id})}">Edit</a>
+                            <form th:action="@{/family/children/{id}/delete(id=${c.id})}" method="post" data-confirm="Remove this child from your profile?">
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card jp-card p-3 mb-4">
+                <h2 class="h5">Home area</h2>
+                <form th:action="@{/family/home-area}" method="post" class="d-flex gap-2">
+                    <label for="homeArea" class="visually-hidden">Home area</label>
+                    <select id="homeArea" name="homeArea" class="form-select">
+                        <option th:each="a : ${areas}" th:value="${a}" th:text="${a.label}" th:selected="${a == user.homeArea}">Area</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary">Update</button>
+                </form>
+            </div>
+
+            <div class="card jp-card p-3 border-danger">
+                <h2 class="h5 text-danger">Delete my account</h2>
+                <p class="small mb-2">Permanently deletes your account, children, plans and ratings (UAE PDPL right to erasure).</p>
+                <form th:action="@{/account/delete}" method="post" data-confirm="This permanently deletes your account and all family data. Continue?">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete account and data</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card jp-card p-3">
+                <h2 class="h5" th:text="${childForm.id == null} ? 'Add a child' : 'Edit child'">Add a child</h2>
+                <form th:action="@{/family/children}" th:object="${childForm}" method="post" novalidate>
+                    <input type="hidden" th:field="*{id}">
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age (years)</label>
+                        <input type="number" min="0" max="17" th:field="*{age}" class="form-control" th:classappend="${#fields.hasErrors('age')} ? 'is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{age}"></div>
+                    </div>
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">Interests</legend>
+                        <div class="jp-check-grid">
+                            <div class="form-check" th:each="i : ${interestOptions}">
+                                <input class="form-check-input" type="checkbox" th:field="*{interests}" th:value="${i}">
+                                <label class="form-check-label" th:for="${#ids.prev('interests')}" th:text="${i.label}">Interest</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">Food preferences</legend>
+                        <div class="jp-check-grid">
+                            <div class="form-check" th:each="f : ${foodOptions}">
+                                <input class="form-check-input" type="checkbox" th:field="*{foodTags}" th:value="${f}">
+                                <label class="form-check-label" th:for="${#ids.prev('foodTags')}" th:text="${f.label}">Food</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="btn jp-btn-primary w-100" th:text="${childForm.id == null} ? 'Add child' : 'Save changes'">Add child</button>
+                    <a th:if="${childForm.id != null}" th:href="@{/family}" class="btn btn-link w-100">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 13
+skinparam shadowing false
+skinparam dpi 150
+skinparam ArrowColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam UsecaseBorderColor #45289f
+skinparam UsecaseBackgroundColor #f4f1ff
+skinparam RectangleBorderColor #45289f
+left to right direction
+title JoyPlan UML Use Case Diagram
+actor "Parent /\nGuardian" as P
+actor "Family member\n(shared plan)" as F
+actor "System\nAdministrator" as A
+actor "AI Plan Generation\nService\n<<external system>>" as AI
+actor "Google Maps\n<<external system>>" as GM
+rectangle "JoyPlan System" {
+  usecase "UC-12 Sign in / Register" as UC12
+  usecase "UC-01 Manage Family Profile" as UC01
+  usecase "UC-02 Enter Outing Details" as UC02
+  usecase "UC-03 View Smart\nRecommendations" as UC03
+  usecase "UC-04 Generate AI Day Plan" as UC04
+  usecase "UC-05 Apply\n“Kids Are Tired”" as UC05
+  usecase "UC-06 Replace a Plan Item" as UC06
+  usecase "UC-07 Regenerate Plan" as UC07
+  usecase "UC-08 Save, Rate & Reuse Plan" as UC08
+  usecase "UC-09 Share Plan" as UC09
+  usecase "UC-10 Get Directions" as UC10
+  usecase "UC-11 Manage Venue List" as UC11
+}
+P --> UC01
+P --> UC04
+P --> UC05
+P --> UC06
+P --> UC07
+P --> UC08
+P --> UC09
+P --> UC10
+F --> UC10
+F --> UC08
+A --> UC11
+UC04 ..> UC02 : <<include>>
+UC04 ..> UC03 : <<include>>
+UC01 ..> UC12 : <<include>>
+UC11 ..> UC12 : <<include>>
+UC04 --> AI
+UC10 --> GM
+UC05 ..> UC04 : <<extend>>
+UC06 ..> UC04 : <<extend>>
+@enduml
