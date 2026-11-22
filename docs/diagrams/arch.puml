@@ -1,0 +1,68 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+skinparam componentStyle rectangle
+skinparam rectangleBorderColor #45289f
+skinparam rectangleBackgroundColor #f4f1ff
+skinparam packageBorderColor #45289f
+skinparam nodeBorderColor #45289f
+skinparam databaseBorderColor #45289f
+title JoyPlan Software Architecture (3-tier, layered Spring Boot MVC)
+node "Client tier: browser on phone or laptop" as client {
+  [Thymeleaf HTML + Bootstrap 5] as ui
+  [Service worker + manifest\n(offline plans, installable)] as sw
+}
+package "Application tier: Spring Boot server" {
+  package "Presentation layer" {
+    [Spring Security filter chain\n(login, roles, CSRF, CSP)] as sec
+    [HomeController / FamilyController\nPlanController / AdminController] as ctrl
+  }
+  package "Business layer" {
+    [PlanService] as ps
+    [RecommendationService\n(scoring and ranking)] as rs
+    [RulePlanner\n(timed itinerary)] as rp
+    [PlanValidator\n(budget, time, hours)] as pv
+    [FamilyService / UserService\nVenueService] as other
+    [AiPlanService\n(Gemini gateway)] as ai
+  }
+  package "Data access layer" {
+    [Spring Data JPA repositories\nUser, Child, Venue, Plan, PlanItem] as repo
+  }
+}
+database "Data tier: H2 (dev) / MySQL 8 (prod)" as db
+cloud "Google Gemini API" as gem
+cloud "Google Maps" as maps
+ui --> sec : HTTPS requests
+sec --> ctrl
+ctrl --> ps
+ctrl --> other
+ps --> rs
+ps --> rp
+ps --> pv
+ps --> ai
+rp --> rs
+rs --> repo
+ps --> repo
+other --> repo
+repo --> db : JDBC
+ai --> gem : HTTPS JSON
+ui ..> maps : directions link
+sw ..> ui : caches pages
+@enduml

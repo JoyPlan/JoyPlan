@@ -1,0 +1,162 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 70
+hide empty members
+title JoyPlan Class Diagram (boundary, control and entity classes)
+
+package "Boundary" {
+  class PlanController <<boundary>> {
+    +create(form: OutingForm): String
+    +view(id: Long): String
+    +alternatives(id, itemId): String
+    +replace(id, itemId, venueId): String
+    +tired(id): String
+    +save(id) / rate(id, n) / share(id, email)
+  }
+  class FamilyController <<boundary>> {
+    +saveChild(form: ChildForm): String
+    +deleteChild(id: Long): String
+    +deleteAccount(): String
+  }
+  class AdminController <<boundary>> {
+    +save(venue: Venue): String
+    +verify(id: Long): String
+    +toggle(id: Long): String
+  }
+  class AiPlanService <<boundary>> {
+    -apiKey: String
+    -model: String
+    +isEnabled(): boolean
+    +compose(ctx, candidates): AiDraft
+  }
+}
+
+package "Control" {
+  class PlanService <<control>> {
+    +generate(user, request): Plan
+    +regenerate(planId, user): Plan
+    +alternatives(planId, itemId, user): Alternatives
+    +replace(planId, itemId, venueId, user): Plan
+    +kidsAreTired(planId, user): String
+    +save() / rate() / reuse() / share()
+  }
+  class RecommendationService <<control>> {
+    +rank(ctx, category): List<ScoredVenue>
+    +score(ctx, venue, maxKm): ScoredVenue
+  }
+  class RulePlanner <<control>> {
+    +build(ctx): List<PlanItem>
+    +sequence(ctx, venues, reasons, strict): List<PlanItem>
+  }
+  class PlanValidator <<control>> {
+    +validate(items, request): List<String>
+    +isValid(items, request): boolean
+  }
+  class FamilyService <<control>> {
+    +save(parent, form): Child
+    +delete(parent, id): void
+  }
+  class VenueService <<control>> {
+    +save(form): Venue
+    +verify(id): void
+    +stats(): AdminStats
+  }
+}
+
+package "Entity" {
+  class User <<entity>> {
+    -id: Long
+    -email: String
+    -passwordHash: String
+    -displayName: String
+    -role: Role
+    -homeArea: Area
+  }
+  class Child <<entity>> {
+    -id: Long
+    -age: int
+    -interests: Set<Interest>
+    -foodTags: Set<FoodTag>
+  }
+  class Plan <<entity>> {
+    -id: Long
+    -title: String
+    -summary: String
+    -totalCost: int
+    -status: PlanStatus
+    -rating: Integer
+    -tiredAdjusted: boolean
+    +replaceItems(items): void
+    +isAccessibleBy(user): boolean
+  }
+  class OutingRequest <<entity>> {
+    -mood: Mood
+    -energy: EnergyLevel
+    -budget: int
+    -maxDistanceKm: int
+    -startTime: LocalTime
+    -endTime: LocalTime
+    -setting: SettingPreference
+    -adults: int
+    -includeMeal: boolean
+  }
+  class PlanItem <<entity>> {
+    -orderIndex: int
+    -startTime: LocalTime
+    -endTime: LocalTime
+    -travelMinutes: int
+    -cost: int
+    -reason: String
+    -visited: boolean
+  }
+  class Venue <<entity>> {
+    -name: String
+    -category: VenueCategory
+    -setting: Setting
+    -minAge / maxAge: int
+    -priceAdult / priceChild: int
+    -durationMinutes: int
+    -energyLevel: EnergyLevel
+    -openTime / closeTime: LocalTime
+    -sponsored: boolean
+    -lastVerified: LocalDate
+    +isStale(): boolean
+  }
+}
+
+PlanController --> PlanService
+FamilyController --> FamilyService
+AdminController --> VenueService
+PlanService --> RecommendationService
+PlanService --> RulePlanner
+PlanService --> PlanValidator
+PlanService --> AiPlanService
+RulePlanner --> RecommendationService
+
+User "1" -- "0..*" Child : has >
+User "1" -- "0..*" Plan : owns >
+Plan "0..*" -- "0..*" User : sharedWith >
+Plan "1" *-- "1" OutingRequest
+Plan "1" *-- "0..*" PlanItem : contains >
+PlanItem "0..*" --> "1" Venue : visits >
+@enduml

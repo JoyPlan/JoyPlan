@@ -1,0 +1,22 @@
+digraph G {
+  graph [dpi=150, rankdir=LR, nodesep=0.9, ranksep=1.3, fontname="DejaVu Sans", label="Communication Diagram – Generate AI Day Plan (UC-04)", labelloc=t, fontsize=16];
+  node [shape=box, style="rounded,filled", fillcolor="#f4f1ff", color="#45289f", fontname="DejaVu Sans", fontsize=12];
+  edge [color="#45289f", fontname="DejaVu Sans", fontsize=11];
+  Parent [label="Parent\n«actor»", fillcolor="#fff1e6"];
+  C [label=":PlanController\n«boundary»", fillcolor="#fff1e6"];
+  PS [label=":PlanService\n«control»", fillcolor="#eef6ff"];
+  RS [label=":RecommendationService\n«control»", fillcolor="#eef6ff"];
+  AI [label=":AiPlanService\n«boundary»", fillcolor="#fff1e6"];
+  RP [label=":RulePlanner\n«control»", fillcolor="#eef6ff"];
+  V [label=":PlanValidator\n«control»", fillcolor="#eef6ff"];
+  R [label=":PlanRepository\n«entity store»"];
+  Parent -> C [label="1: submit outing form"];
+  C -> PS [label="2: generate(user, request)"];
+  PS -> RS [label="3*: rank(ctx, category)"];
+  PS -> AI [label="4 [key set]: compose(ctx, candidates)"];
+  PS -> RP [label="5: sequence(...) / build(ctx)"];
+  RP -> RS [label="5.1*: rank(ctx, category)"];
+  PS -> V [label="6: validate(items, request)"];
+  PS -> R [label="7: save(plan)"];
+  C -> Parent [label="8: show plan", style=dashed];
+}

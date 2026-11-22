@@ -1,0 +1,120 @@
+@startuml
+skinparam defaultFontName "DejaVu Sans"
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam ArrowColor #45289f
+skinparam ClassBorderColor #45289f
+skinparam ClassBackgroundColor #ffffff
+skinparam ClassHeaderBackgroundColor #f4f1ff
+skinparam ClassBackgroundColor<<boundary>> #fff1e6
+skinparam ClassBackgroundColor<<control>> #eef6ff
+skinparam ClassBackgroundColor<<entity>> #f4f1ff
+skinparam SequenceLifeLineBorderColor #45289f
+skinparam ParticipantBackgroundColor #f4f1ff
+skinparam ParticipantBorderColor #45289f
+skinparam ActorBorderColor #45289f
+skinparam ActorBackgroundColor #fff1e6
+skinparam SequenceGroupBorderColor #d9480f
+skinparam NoteBackgroundColor #fffbe6
+skinparam NoteBorderColor #c9a400
+skinparam dpi 150
+skinparam linetype ortho
+hide circle
+hide methods
+skinparam ClassBackgroundColor #ffffff
+title JoyPlan Database Design (tables, keys and relationships)
+entity app_user {
+  * id : BIGINT <<PK>>
+  --
+  * email : VARCHAR(120) <<UNIQUE>>
+  * password_hash : VARCHAR(255)
+  * display_name : VARCHAR(80)
+  * role : VARCHAR(20)
+  home_area : VARCHAR(30)
+  * created_at : TIMESTAMP
+}
+entity child {
+  * id : BIGINT <<PK>>
+  --
+  * parent_id : BIGINT <<FK>>
+  * age : INT (0-17)
+}
+entity child_interest {
+  * child_id : BIGINT <<FK>>
+  --
+  * interest : VARCHAR(20)
+}
+entity child_food_tag {
+  * child_id : BIGINT <<FK>>
+  --
+  * food_tag : VARCHAR(20)
+}
+entity venue {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(120)
+  * category : VARCHAR(20)
+  * setting : VARCHAR(20)
+  * area : VARCHAR(30)
+  latitude, longitude : DOUBLE
+  min_age, max_age : INT
+  price_adult, price_child : INT
+  duration_minutes : INT
+  * energy_level : VARCHAR(20)
+  * open_time, close_time : TIME
+  sponsored, active : BOOLEAN
+  last_verified : DATE
+}
+entity venue_interest {
+  * venue_id : BIGINT <<FK>>
+  --
+  * interest : VARCHAR(20)
+}
+entity venue_food_tag {
+  * venue_id : BIGINT <<FK>>
+  --
+  * food_tag : VARCHAR(20)
+}
+entity plan {
+  * id : BIGINT <<PK>>
+  --
+  * owner_id : BIGINT <<FK>>
+  * title : VARCHAR(120)
+  summary : VARCHAR(1000)
+  area, mood, energy, setting : VARCHAR
+  budget, max_distance_km, adults : INT
+  start_time, end_time : TIME
+  outing_date : DATE
+  include_meal : BOOLEAN
+  total_cost : INT
+  * status : VARCHAR(20)
+  rating : INT (1-5)
+  generated_by, tired_adjusted
+  * created_at, updated_at : TIMESTAMP
+}
+entity plan_item {
+  * id : BIGINT <<PK>>
+  --
+  * plan_id : BIGINT <<FK>>
+  * venue_id : BIGINT <<FK>>
+  order_index : INT
+  * start_time, end_time : TIME
+  travel_minutes, cost : INT
+  reason : VARCHAR(600)
+  visited : BOOLEAN
+}
+entity plan_share {
+  * plan_id : BIGINT <<PK, FK>>
+  * user_id : BIGINT <<PK, FK>>
+}
+app_user ||--o{ child
+child ||--o{ child_interest
+child ||--o{ child_food_tag
+app_user ||--o{ plan
+plan ||--o{ plan_item
+venue ||--o{ plan_item
+venue ||--o{ venue_interest
+venue ||--o{ venue_food_tag
+plan ||--o{ plan_share
+app_user ||--o{ plan_share
+@enduml
